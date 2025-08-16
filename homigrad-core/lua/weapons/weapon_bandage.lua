@@ -1,0 +1,58 @@
+SWEP.Base = "med_base"
+SWEP.PrintName = "Бинт"
+SWEP.Category = "Медицина"
+SWEP.Spawnable = true
+SWEP.SupportTPIK = true
+
+SWEP.WorldModel = "models/bandage/bandage.mdl"
+
+SWEP.ViewModelFlip = false
+
+SWEP.AutoSwitchTo = false
+SWEP.AutoSwitchFrom = false
+
+SWEP.UseHands = true
+SWEP.FiresUnderwater = false
+SWEP.DrawCrosshair = false
+SWEP.DrawAmmo = true
+
+SWEP.WorldAng = Angle(0,90,0)
+SWEP.WorldPos = Vector(2.8,-0.4,2)
+SWEP.CorrectScale = 0.8
+
+SWEP.IconPos = Vector(40,0,0)
+SWEP.IconAng = Angle(0,90,0)
+
+function SWEP:Heal(ply)
+    if !ply then
+        ply = self:GetOwner()
+    end
+    if SERVER then
+        if ply.bleed > 0 then
+            ply.blood = math.Clamp(ply.blood + 25,0,5000)
+        end
+        ply.bleed = math.Clamp(ply.bleed - math.random(10,30),0,1000)
+    end
+end
+
+function SWEP:Step_Anim()
+    local ply = self:GetOwner()
+
+    if self:IsAttacking(ply) then
+        hg.bone.Set(ply,"r_upperarm",Vector(0,0,0),Angle(0,-30,0),1,0.125)
+        hg.bone.Set(ply,"r_forearm",Vector(0,0,0),Angle(-15,-5,0),1,0.125)
+        hg.bone.Set(ply,"r_hand",Vector(0,0,0),Angle(45,0,0),1,0.125)
+        hg.bone.Set(ply,"l_upperarm",Vector(0,0,0),Angle(0,-35,0),1,0.125)
+        hg.bone.Set(ply,"l_forearm",Vector(0,0,0),Angle(20,-25,0),1,0.125)
+        hg.bone.Set(ply,"l_hand",Vector(0,0,0),Angle(0,0,10),1,0.125)
+    elseif self:IsSAttacking(ply) then
+        hg.bone.Set(ply,"r_upperarm",Vector(0,0,0),Angle(0,-90,0),1,0.075)
+        hg.bone.Set(ply,"r_forearm",Vector(0,0,0),Angle(20,55,0),1,0.125)
+        hg.bone.Set(ply,"r_hand",Vector(0,0,0),Angle(0,0,0),1,0.275)   
+    else
+        hg.bone.Set(ply,"r_upperarm",Vector(0,0,0),Angle(0,-40,0),1,0.075)
+        hg.bone.Set(ply,"r_forearm",Vector(0,0,0),Angle(20,-10,0),1,0.075)
+        hg.bone.Set(ply,"r_hand",Vector(0,0,0),Angle(0,0,10),1,0.075)
+        self.LastUse = CurTime() + 0.3
+    end
+end
